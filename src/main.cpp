@@ -8,10 +8,12 @@
 #include <time.h>   /* time */
 #include "cRunWatch.h"
 
+// input data
 std::vector<int> theCoupons;
 std::vector<int> theItems;
 int theMoney;
 
+// details of buying an item with a coupon
 struct sBuy
 {
     int itemIndex;
@@ -38,14 +40,20 @@ struct sBuy
     }
 };
 
+// the planned buys calculated by the solver
 std::vector<sBuy> thePlan;
 
+// generated the problem in the original stack overflow question
+// https://stackoverflow.com/q/79218773/16582
 void gen1()
 {
     theMoney = 30;
     theItems = {12, 20, 15, 10};
     theCoupons = {9, 6, 8, 7};
 }
+
+/// @brief generate random problem of set size
+/// @param count of items and coupons
 void gen(int count)
 {
     srand(time(NULL));
@@ -59,6 +67,9 @@ void gen(int count)
     theMoney = count * 20;
 }
 
+/// @brief record a buy
+/// @param itemIndex 
+/// @param couponIndex 
 void buy(int itemIndex, int couponIndex)
 {
     int cost = theItems[itemIndex] - theCoupons[couponIndex];
@@ -68,16 +79,25 @@ void buy(int itemIndex, int couponIndex)
     thePlan.emplace_back(itemIndex, couponIndex, cost, theMoney);
 }
 
+/// @brief apply algorithm to solve problem
 void solve()
 {
+    // sort items into increasing cost
     std::sort(theItems.begin(), theItems.end());
+
+    // sort items into decreasing value
     std::sort(theCoupons.begin(), theCoupons.end(),
               [](int a, int b)
               { return a > b; });
+
+    // buy items of increasing cost
     for (int itemIndex = 0; itemIndex < theItems.size(); itemIndex++)
+        // apply coupon of decreasing value
         for (int couponIndex = 0; couponIndex < theCoupons.size(); couponIndex++)
             buy(itemIndex, couponIndex);
 }
+
+// display plenned purchases
 void display()
 {
     for (auto &b : thePlan)
@@ -85,6 +105,7 @@ void display()
     std::cout << "Items bought " << thePlan.size() << "\n";
 }
 
+// unit test
 void test()
 {
     gen1();
@@ -97,8 +118,10 @@ void test()
     }
 }
 
+// performance test
 void performace()
 {
+    // start timimng profiler
     raven::set::cRunWatch::Start();
     gen(1000);
     {
@@ -119,13 +142,16 @@ void performace()
     }
     std::cout << "N=100000, Items bought " << thePlan.size() << "\n";
 
+    // display timing profiler report
     raven::set::cRunWatch::Report();
 }
 
 main()
 {
+    // run unit test
     test();
 
+    // run performance test
     performace();
 
     return 0;
