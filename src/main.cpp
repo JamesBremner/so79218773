@@ -85,7 +85,7 @@ void solve()
     // sort items into increasing cost
     std::sort(theItems.begin(), theItems.end());
 
-    // sort items into decreasing value
+    // sort coupons into decreasing value
     std::sort(theCoupons.begin(), theCoupons.end(),
               [](int a, int b)
               { return a > b; });
